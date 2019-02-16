@@ -31,24 +31,29 @@ const updateValue : Function = (scale : number, dir : number, a : number, b : nu
 
 const drawBallLine : Function = (context : CanvasRenderingContext2D, size : number, sc : number, i : number, r : number) => {
     const sck : number = divideScale(sc, i, parts)
-    context.save()
-    context.translate(0, -size * i)
-    context.rotate(Math.PI / 2 * i)
-    context.fillRect(-r, -size * sck, 2 * r, size * sck)
-    context.beginPath()
-    context.arc(0, -size * sck, r, 0, 2 * Math.PI)
-    context.fill()
-    context.restore()
+    if (sck > 0) {
+        context.save()
+        context.translate(0, -size * i)
+        context.rotate(Math.PI / 2 * i)
+        context.fillRect(-r, -size * sck, 2 * r, size * sck)
+        context.beginPath()
+        context.arc(0, -size * sck, r, 0, 2 * Math.PI)
+        context.fill()
+        context.restore()
+    }
 }
 
 const drawBLMNode : Function = (context : CanvasRenderingContext2D, i : number, scale : number) => {
     const gap : number = h / (nodes + 1)
     const size : number = gap / sizeFactor
     context.fillStyle = foreColor
+    const sc1 : number = divideScale(scale, 0, 2)
+    const sc2 : number = divideScale(scale, 1, 2)
     context.save()
     context.translate(w / 2, gap * (i + 1))
+    context.rotate(Math.PI/2 * sc2)
     for (var j = 0; j < parts; j++) {
-        const sc : number = divideScale(scale, j, parts)
+        const sc : number = divideScale(sc1, j, parts)
         context.save()
         context.scale(1 - 2 * j, 1 - 2 * j)
         for (var k = 0; k < parts; k++) {
@@ -100,7 +105,7 @@ class State {
     prevScale : number = 0
 
     update(cb : Function) {
-        this.scale += updateValue(this.scale, parts, parts)
+        this.scale += updateValue(this.scale, this.dir, parts * parts, 1)
         if (Math.abs(this.scale - this.prevScale) > 1) {
             this.scale = this.prevScale + this.dir
             this.dir = 0
