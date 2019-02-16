@@ -86,7 +86,7 @@ class BallLineMazeStage {
         }
     }
 
-    static initCanvas() {
+    static init() {
         const stage : BallLineMazeStage = new BallLineMazeStage()
         stage.initCanvas()
         stage.render()
