@@ -1,11 +1,14 @@
 const w : number = window.innerWidth
 const h : number = window.innerHeight
+const nodes : number = 5
+const parts : number = 2
 const scGap : number = 0.05
 const scDiv : number = 0.51
 const sizeFactor : number = 2.8
 const strokeFactor : number = 3
 const foreColor : string = '#4CAF50'
 const backColor : string = '#BDBDBD'
+const rFactor : number = 5
 
 const maxScale : Function = (scale : number, i : number, n : number) : number => {
     return Math.max(0, scale - i / n)
@@ -24,6 +27,36 @@ const mirrorValue : Function = (scale : number, a : number, b : number) => {
 
 const updateValue : Function = (scale : number, dir : number, a : number, b : number) => {
     return mirrorValue(scale, a, b) * dir * scGap
+}
+
+const drawBallLine : Function = (context : CanvasRenderingContext2D, size : number, sc : number, i : number, r : number) => {
+    const sck : number = divideScale(sc, i, parts)
+    context.save()
+    context.translate(0, -size * i)
+    context.rotate(Math.PI / 2 * i)
+    context.fillRect(-r, -size * sck, 2 * r, size * sck)
+    context.beginPath()
+    context.arc(0, -size * sck, r, 0, 2 * Math.PI)
+    context.fill()
+    context.restore()
+}
+
+const drawBLMNode : Function = (context : CanvasRenderingContext2D, i : number, scale : number) => {
+    const gap : number = h / (nodes + 1)
+    const size : number = gap / sizeFactor
+    context.fillStyle = foreColor
+    context.save()
+    context.translate(w / 2, gap * (i + 1))
+    for (var j = 0; j < parts; j++) {
+        const sc : number = divideScale(scale, j, parts)
+        context.save()
+        context.scale(1 - 2 * j, 1 - 2 * j)
+        for (var k = 0; k < parts; k++) {
+            drawBallLine(context, size, sc, k, size / rFactor)
+        }
+        context.restore()
+    }
+    context.restore()
 }
 
 class BallLineMazeStage {
