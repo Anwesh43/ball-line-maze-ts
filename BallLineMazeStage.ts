@@ -199,3 +199,25 @@ class BallLineMaze {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    blm : BallLineMaze = new BallLineMaze()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.blm.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.blm.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.blm.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
